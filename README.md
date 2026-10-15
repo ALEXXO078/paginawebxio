@@ -1,12 +1,25 @@
-# ADS Store
+# Your Personal Page Builder
 
-Tienda online de ropa, calzado y accesorios con catalogo, favoritos, pedidos y panel administrativo.
+https://now.com.pe/?srsltid=AU7gw4V8h4hf97BxdCD1oLlctV_2XesxFMTYlMW7i72fY7o8XFPYrKuT
+hazme esta pagina
 
-## Desarrollo local
+This project was built with [Lovable](https://lovable.dev).
 
-Necesitas Node.js y npm.
+## Build with Lovable
+
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/771318ba-49c4-51e5-b130-e98fe0f6cdcc).
+
+- **Ship faster**: describe what you want to build and Lovable handles the code.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+
+## Development
+
+Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
 ```sh
-npm install
+git clone <this-repository-url>
+cd <repository-name>
+npm i
 npm run dev
 ```

@@ -6,8 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { pen } from "@/lib/products";
 import { useCatalogLazy } from "@/lib/catalog";
 import { SiteHeader } from "@/components/SiteHeader";
-import { canAccessAdmin } from "@/lib/auth";
-import { LayoutDashboard } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/cuenta")({
   head: () => ({
@@ -37,15 +35,6 @@ function Cuenta() {
     queryKey: ["favorites"],
     queryFn: async () => (await supabase.from("favorites").select("product_slug")).data ?? [],
   });
-  const adminAccess = useQuery({
-    queryKey: ["admin-access"],
-    queryFn: async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) return false;
-      const { data: role } = await supabase.rpc("has_role", { _user_id: userData.user.id, _role: "admin" });
-      return canAccessAdmin(userData.user.email, Boolean(role));
-    },
-  });
 
   async function logout() {
     await qc.cancelQueries();
@@ -60,14 +49,7 @@ function Cuenta() {
       <div className="mx-auto max-w-5xl px-4 py-10">
         <div className="flex items-end justify-between">
           <h1 className="font-display text-5xl font-black uppercase">Mi cuenta</h1>
-          <div className="flex items-center gap-4">
-            {adminAccess.data && (
-              <Link to="/admin" className="flex items-center gap-1 text-sm font-semibold underline">
-                <LayoutDashboard className="h-4 w-4" /> Panel de control
-              </Link>
-            )}
-            <button onClick={logout} className="text-sm underline">Cerrar sesión</button>
-          </div>
+          <button onClick={logout} className="text-sm underline">Cerrar sesión</button>
         </div>
         <div className="mt-6 flex gap-2 border-b">
           {(["pedidos", "favoritos", "datos"] as const).map((t) => (

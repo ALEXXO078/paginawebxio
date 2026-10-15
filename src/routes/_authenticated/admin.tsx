@@ -287,42 +287,9 @@ function Productos({ d }: { d: D }) {
 function ProductForm({ initial, isNew, onClose, onSaved }: { initial: Form; isNew: boolean; onClose: () => void; onSaved: () => void }) {
   const [f, setF] = useState<Form>(initial);
   const [busy, setBusy] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const set = (k: keyof Form, v: string | boolean) => setF((s) => ({ ...s, [k]: v }));
   const subs = categories.find((c) => c.name === f.category)?.subs ?? [];
   const imgs = f.images.split("\n").map((s) => s.trim()).filter(Boolean);
-
-  async function uploadImages(event: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(event.target.files ?? []);
-    event.target.value = "";
-    if (files.length === 0) return;
-    setUploading(true);
-    const uploaded: string[] = [];
-    for (const file of files) {
-      if (!file.type.startsWith("image/")) {
-        toast.error(`${file.name} no es una imagen válida`);
-        continue;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error(`${file.name} supera el límite de 5 MB`);
-        continue;
-      }
-      const fileName = file.name.toLowerCase().replace(/[^a-z0-9._-]/g, "-");
-      const path = `products/${crypto.randomUUID()}-${fileName}`;
-      const { error } = await supabase.storage.from("product-images").upload(path, file, { contentType: file.type });
-      if (error) {
-        toast.error(`No se pudo subir ${file.name}`);
-        continue;
-      }
-      const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-      uploaded.push(data.publicUrl);
-    }
-    if (uploaded.length > 0) {
-      set("images", [...imgs, ...uploaded].join("\n"));
-      toast.success(`${uploaded.length} imagen${uploaded.length === 1 ? "" : "es"} subida${uploaded.length === 1 ? "" : "s"}`);
-    }
-    setUploading(false);
-  }
 
   async function save() {
     const slug = isNew ? slugify(f.slug || f.name) : f.slug;
@@ -377,11 +344,9 @@ function ProductForm({ initial, isNew, onClose, onSaved }: { initial: Form; isNe
           <div className="col-span-2"><label className={label}>Tallas / variantes (separadas por coma)</label><input className={input} value={f.sizes} onChange={(e) => set("sizes", e.target.value)} /></div>
           <div className="col-span-2"><label className={label}>Tallas agotadas (separadas por coma)</label><input className={input} value={f.soldout} onChange={(e) => set("soldout", e.target.value)} /></div>
           <div className="col-span-2">
-            <label className={label}>Fotos</label>
-            <input type="file" accept="image/*" multiple className={`${input} file:mr-3 file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-primary-foreground`} onChange={uploadImages} disabled={uploading} />
-            <p className="mt-1 text-xs text-muted-foreground">Puedes subir varias imágenes desde tu PC. Máximo 5 MB por imagen.</p>
+            <label className={label}>Fotos (una dirección web por línea)</label>
             <textarea rows={3} className={input} value={f.images} onChange={(e) => set("images", e.target.value)} placeholder="https://…" />
-            <p className="mt-2 text-xs text-muted-foreground">O pega una URL o elige una foto incluida en la tienda:</p>
+            <p className="mt-2 text-xs text-muted-foreground">O elige una foto de la tienda:</p>
             <div className="mt-1 flex flex-wrap gap-1">
               {assetKeys.map((k) => (
                 <button key={k} type="button" onClick={() => set("images", [...imgs, `asset:${k}`].join("\n"))} className="h-12 w-10 overflow-hidden border hover:border-foreground">
@@ -407,7 +372,7 @@ function ProductForm({ initial, isNew, onClose, onSaved }: { initial: Form; isNe
         </div>
         <div className="mt-8 flex gap-3">
           <button onClick={onClose} className="flex-1 border py-3 text-xs font-bold uppercase">Cancelar</button>
-          <button onClick={save} disabled={busy || uploading} className="flex-1 bg-primary py-3 text-xs font-bold uppercase text-primary-foreground disabled:opacity-50">{busy ? "Guardando…" : uploading ? "Subiendo…" : "Guardar"}</button>
+          <button onClick={save} disabled={busy} className="flex-1 bg-primary py-3 text-xs font-bold uppercase text-primary-foreground disabled:opacity-50">{busy ? "Guardando…" : "Guardar"}</button>
         </div>
       </div>
     </div>
