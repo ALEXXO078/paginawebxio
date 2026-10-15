@@ -15,6 +15,27 @@
       "when": 1791776443367,
       "tag": "0001_admin_products_panel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791928331312,
+      "tag": "0002_seed_admin_user",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791929000000,
+      "tag": "0003_product_image_storage",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791929100000,
+      "tag": "0004_profile_phone",
+      "breakpoints": true
     }
   ]
 }
